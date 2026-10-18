@@ -114,16 +114,25 @@ def answer_question(question):
     elif "paid" in q or "revenue" in q or "sales" in q:
         rows = [r for r in rows if r["status"] == "paid"]
 
-    # Count questions
-    if any(x in q for x in ["distinct customer", "unique customer",
-                            "how many customers", "number of customers"]):
-        return len({r["customer"] for r in rows})
+    
+# Average questions must be checked before "how many",
+# because average questions can also contain those words.
+if "average" in q or "on average" in q or "mean" in q:
+    total = sum(usd(r) for r in rows)
+    return round(total / len(rows), 2) if rows else 0
 
-    if "how many" in q or "count" in q or "number of orders" in q:
-        if "order" in q or "orders" in q:
-            return len(rows)
-        return len(rows)
+# Count distinct customers
+if any(x in q for x in [
+    "distinct customer", "unique customer",
+    "how many customers", "number of customers"
+]):
+    return len({r["customer"] for r in rows})
 
+# Other count questions
+if "how many" in q or "count" in q or "number of orders" in q:
+    return len(rows)
+
+    
     # Ranking / breakdown questions
     group_field = None
     if "by product" in q or "each product" in q or "per product" in q:
