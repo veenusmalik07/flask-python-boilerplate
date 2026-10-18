@@ -165,8 +165,11 @@ def answer_question(question):
     elif "void" in q or "cancelled" in q or "canceled" in q:
         rows = [r for r in rows if r["status"] == "void"]
 
-    elif "paid" in q or "revenue" in q or "sales" in q:
-        rows = [r for r in rows if r["status"] == "paid"]
+    elif any(word in q for word in [
+    "paid", "revenue", "sales", "earn", "earned",
+    "income", "turnover"
+]):
+    rows = [r for r in rows if r["status"] == "paid"]
 
     # Average questions must be checked before general count questions.
     if "average" in q or "on average" in q or "mean" in q:
