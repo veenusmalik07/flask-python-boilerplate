@@ -1,33 +1,22 @@
-from flask import Blueprint, jsonify
-
+from flask import Blueprint, request, jsonify
+import os
+import requests
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 api_bp = Blueprint("api", __name__)
 
+@api_bp.post("/api/answer")
+def answer_question():
+    body = request.get_json(silent=True) or {}
+    question = body.get("question", "").strip()
 
-@api_bp.get("/api/data")
-def get_sample_data():
-    return jsonify(
-        {
-            "data": [
-                {"id": 1, "name": "Sample Item 1", "value": 100},
-                {"id": 2, "name": "Sample Item 2", "value": 200},
-                {"id": 3, "name": "Sample Item 3", "value": 300},
-            ],
-            "total": 3,
-            "timestamp": "2024-01-01T00:00:00Z",
-        }
-    )
+    if not question:
+        return jsonify({"error": "A question is required"}), 400
 
-
-@api_bp.get("/api/items/<int:item_id>")
-def get_item(item_id: int):
-    return jsonify(
-        {
-            "item": {
-                "id": item_id,
-                "name": f"Sample Item {item_id}",
-                "value": item_id * 100,
-            },
-            "timestamp": "2024-01-01T00:00:00Z",
-        }
-    )
+    return jsonify({
+        "error": (
+            "Ledger data and question-answering logic "
+            "have not been configured yet."
+        )
+    }), 501
